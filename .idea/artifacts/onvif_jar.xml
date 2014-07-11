@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="onvif:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/onvif_jar</output-path>
+    <root id="archive" name="onvif.jar">
+      <element id="module-output" name="onvif" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../lib/google-gson-2.2.4/gson-2.2.4.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
