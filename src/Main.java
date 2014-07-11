@@ -1,21 +1,14 @@
-import com.net.HTTP;
-import com.onvif.Query;
-import com.onvif.Response;
-import org.onvif.ver10.device.wsdl.GetCapabilities;
-import org.onvif.ver10.device.wsdl.GetCapabilitiesResponse;
-import org.onvif.ver10.device.wsdl.GetDeviceInformation;
-import org.onvif.ver10.media.wsdl.GetVideoSourceConfiguration;
-import org.onvif.ver10.media.wsdl.GetVideoSourceConfigurationResponse;
-import org.onvif.ver10.media.wsdl.GetVideoSources;
-import org.onvif.ver10.media.wsdl.GetVideoSourcesResponse;
-import org.onvif.ver10.schema.CapabilityCategory;
-import org.onvif.ver10.schema.VideoSource;
+import com.cam.Cam;
+import com.cam.Profile;
+import com.google.gson.Gson;
+import org.onvif.ver10.media.wsdl.GetSnapshotUriResponse;
+import org.onvif.ver10.media.wsdl.GetStreamUriResponse;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -23,67 +16,82 @@ import java.net.URL;
  *
  */
 public class Main {
+
+    private static String json(String error, String profiles){
+        return "{\"error\":\"" + error + "\", \"profiles\":" + profiles + "}";
+    }
+
+    private static void error(String s){
+        System.out.println(json(s, "[]"));
+    }
+
+    private static void error(Exception e){
+        error(e.getMessage());
+    }
+
     public static void main(String[] args){
-        GetCapabilities getCapabilities = new GetCapabilities();
-        getCapabilities.getCategory().add(CapabilityCategory.ALL);
-
-        Query o = new Query();
-        String xml = o.getXML(getCapabilities);
-        System.out.println(xml);
-
-        HTTP http = new HTTP();
-        String response = "";
-        try {
-            response = http.post(new URL("http://10.113.151.152:12001/"), xml);
-            System.out.println(response);
-            File resFile = new File("res.xml");
-            FileWriter fw = new FileWriter(resFile);
-            fw.write(response);
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(args.length == 0){
+            error("need onvif url");
+            return;
         }
 
-        Response<GetCapabilitiesResponse> r = new Response<>(GetCapabilitiesResponse.class);
-        GetCapabilitiesResponse g2 = r.getResponse(response);
-
-        //http://10.113.151.152:12001/tds/device
-        xml = o.getXML(new GetDeviceInformation());
-        System.out.println(xml);
+        Cam cam;
 
         try {
-            response = http.post(new URL("http://10.113.151.152:12001/tds/device"), xml);
-            System.out.println(response);
+            cam = new Cam(args[0]);
+            cam.init();
 
-            Response<GetCapabilitiesResponse> r2 = new Response<>(GetCapabilitiesResponse.class);
+        } catch (ConnectException | MalformedURLException e){
+            error(e); return;
         } catch (IOException e) {
             e.printStackTrace();
+            error(e); return;
         }
 
-        xml = o.getXML(new GetVideoSources());
-        System.out.println(xml);
+        List<Profile> profiles = new ArrayList<>();
 
-        try {
-            response = http.post(new URL("http://10.113.151.152:12001/tds/media"), xml);
-            System.out.println(response);
+        for(org.onvif.ver10.schema.Profile p : cam.getProfiles()){
+            GetStreamUriResponse stream = null;
+            GetSnapshotUriResponse snap = null;
+            try {
+                stream = cam.getStreamUri(p);
+                snap = cam.getSnapshotUri(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-            Response<GetVideoSourcesResponse> r3 = new Response<>(GetVideoSourcesResponse.class);
-            GetVideoSourcesResponse vss = r3.getResponse(response);
+            Profile profile = new Profile();
+            profile.setName(p.getName());
+            profile.setWidth(p.getVideoEncoderConfiguration().getResolution().getWidth());
+            profile.setHeight(p.getVideoEncoderConfiguration().getResolution().getHeight());
+            profile.setQuality(p.getVideoEncoderConfiguration().getQuality());
 
-            VideoSource vs = vss.getVideoSources().get(0);
-            String token = vs.getToken();
+            Profile.URI video = profile.new URI();
+            profile.setVideo(video);
+            Profile.URI snapshot = profile.new URI();
+            profile.setSnap(snapshot);
 
-            GetVideoSourceConfiguration vsc = new GetVideoSourceConfiguration();
-            vsc.setConfigurationToken(token);
-            xml = o.getXML(vsc);
-            System.out.println(xml);
-            response = http.post(new URL("http://10.113.151.152:12001/tds/media"), xml);
-            System.out.println(response);
-            Response<GetVideoSourceConfigurationResponse> rvsc = new Response<>(GetVideoSourceConfigurationResponse.class);
-            GetVideoSourceConfigurationResponse vscr = rvsc.getResponse(response);
+            if(stream != null){
+                video.setUri(stream.getMediaUri().getUri());
+                if(stream.getMediaUri().getTimeout() != null)
+                    video.setTtl(stream.getMediaUri().getTimeout().toString());
+                video.setInvalidAfterConnection(stream.getMediaUri().isInvalidAfterConnect());
+                video.setInvalidAfterReboot(stream.getMediaUri().isInvalidAfterReboot());
+            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            if(snap != null){
+                snapshot.setUri(snap.getMediaUri().getUri());
+                if(snap.getMediaUri().getTimeout() != null)
+                    snapshot.setTtl(snap.getMediaUri().getTimeout().toString());
+                snapshot.setInvalidAfterConnection(snap.getMediaUri().isInvalidAfterConnect());
+                snapshot.setInvalidAfterReboot(snap.getMediaUri().isInvalidAfterReboot());
+            }
+
+            profiles.add(profile);
         }
+
+        Gson gson = new Gson();
+        System.out.println(json("null", gson.toJson(profiles)));
+
     }
 }
