@@ -43,7 +43,6 @@ public class Response<E> {
             //JAXBElement<Envelope> root = u.unmarshal(s, Envelope.class);
             JAXBElement root = (JAXBElement)u.unmarshal(s);
 
-            System.out.println(root.getValue().getClass());
             if(root.getValue().getClass().toString().equals("class org.xmlsoap.schemas.soap.envelope.Envelope")){
                 //SOAP 1.1
                 org.xmlsoap.schemas.soap.envelope.Envelope e = (org.xmlsoap.schemas.soap.envelope.Envelope)root.getValue();
