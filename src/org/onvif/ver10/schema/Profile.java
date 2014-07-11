@@ -16,7 +16,7 @@ import javax.xml.namespace.QName;
  * 
  * 			A media profile consists of a set of media configurations. Media profiles are used by a client
  * 			to configure properties of a media stream from an NVT.
- * 			An NVT shall provide at least one media profile at boot. An NVT should provide “ready to use”
+ * 			An NVT shall provide at least one media profile at boot. An NVT should provide ï¿½ready to useï¿½
  * 			profiles for the most common media configurations that the device offers.
  * 			A profile consists of a set of interconnected configuration entities. Configurations are provided
  * 			by the NVT and can be either static or created dynamically by the NVT. For example, the
