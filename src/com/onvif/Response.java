@@ -17,30 +17,15 @@ import java.io.StringReader;
  *
  */
 public class Response<E> {
-    //Class<E> type;
-    private Class type;
-
-    /**
-     *
-     * @param type Class Class of object (Object.class, object.getClass())
-     */
-    public Response(Class type) {
-        this.type = type;
-    }
-
     public E getResponse(String xml){
         if(xml.equals("")) return null;
 
         try {
-            JAXBContext jc  = JAXBContext.newInstance(
-                    Envelope.class,
-                    org.xmlsoap.schemas.soap.envelope.Envelope.class,
-                    Body.class,
-                    type);
+            javax.xml.bind.JAXBContext jc = com.onvif.JAXBContext.getInstance();
+
             Unmarshaller u = jc.createUnmarshaller();
 
             Source s = new StreamSource(new StringReader(xml));
-            //JAXBElement<Envelope> root = u.unmarshal(s, Envelope.class);
             JAXBElement root = (JAXBElement)u.unmarshal(s);
 
             if(root.getValue().getClass().toString().equals("class org.xmlsoap.schemas.soap.envelope.Envelope")){

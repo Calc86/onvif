@@ -1,10 +1,7 @@
 package com.onvif;
 
-import org.onvif.ver10.device.wsdl.GetCapabilities;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+//import javax.xml.bind.JAXBContext;
+import javax.xml.bind.*;
 import java.io.StringWriter;
 
 /**
@@ -16,7 +13,8 @@ public class Query {
 
     public String getXML(Object object){
         try {
-            JAXBContext jc = JAXBContext.newInstance(object.getClass());
+            //JAXBContext jc = JAXBContext.newInstance(object.getClass());
+            javax.xml.bind.JAXBContext jc = JAXBContext.getInstance();
 
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);

@@ -12,7 +12,6 @@ import org.onvif.ver10.schema.StreamSetup;
 import org.onvif.ver10.schema.Transport;
 import org.onvif.ver10.schema.TransportProtocol;
 import org.onvif.ver10.schema.StreamType;
-import org.onvif.ver10.schema.MediaUri;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -76,7 +75,7 @@ public class Cam {
 
         String response = query(onvif, getCapabilities);
 
-        Response<GetCapabilitiesResponse> r = new Response<>(GetCapabilitiesResponse.class);
+        Response<GetCapabilitiesResponse> r = new Response<>();
         GetCapabilitiesResponse capabilities = r.getResponse(response);
 
         if(capabilities.getCapabilities().getAnalytics() != null)
@@ -107,7 +106,7 @@ public class Cam {
     private void setProfiles() throws IOException {
         String response = query(onvifMedia, new GetProfiles());
 
-        Response<GetProfilesResponse> r = new Response<>(GetProfilesResponse.class);
+        Response<GetProfilesResponse> r = new Response<>();
         GetProfilesResponse profilesResponse = r.getResponse(response);
 
         profiles = profilesResponse.getProfiles();
@@ -125,7 +124,7 @@ public class Cam {
 
         String response = query(onvifMedia, s);
 
-        Response<GetStreamUriResponse> r = new Response<>(GetStreamUriResponse.class);
+        Response<GetStreamUriResponse> r = new Response<>();
         return r.getResponse(response);
     }
 
@@ -135,7 +134,7 @@ public class Cam {
 
         String response = query(onvifMedia, getSnapshotUri);
 
-        Response<GetSnapshotUriResponse> r = new Response<>(GetSnapshotUriResponse.class);
+        Response<GetSnapshotUriResponse> r = new Response<>();
         return r.getResponse(response);
     }
 

@@ -1,9 +1,11 @@
 import com.cam.Cam;
 import com.cam.Profile;
 import com.google.gson.Gson;
+import com.onvif.JAXBContext;
 import org.onvif.ver10.media.wsdl.GetSnapshotUriResponse;
 import org.onvif.ver10.media.wsdl.GetStreamUriResponse;
 
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
@@ -32,6 +34,14 @@ public class Main {
     public static void main(String[] args){
         if(args.length == 0){
             error("need onvif url");
+            return;
+        }
+
+        try {
+            JAXBContext.create();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            error("JAXBContext init fail");
             return;
         }
 
