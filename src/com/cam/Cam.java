@@ -13,6 +13,8 @@ import org.onvif.ver10.schema.Transport;
 import org.onvif.ver10.schema.TransportProtocol;
 import org.onvif.ver10.schema.StreamType;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -38,6 +40,9 @@ public class Cam {
     private URL onvifPTZ;
     private boolean isDebug = false;
 
+    private int sequence = 0;
+    private boolean isSave = false;
+
     private List<Profile> profiles;
 
     public Cam(String onvif) throws MalformedURLException {
@@ -54,6 +59,10 @@ public class Cam {
         isDebug = value;
     }
 
+    public void setSave(boolean isSave) {
+        this.isSave = isSave;
+    }
+
     public void init() throws IOException {
         setEndpoints();
         setProfiles();
@@ -66,7 +75,26 @@ public class Cam {
         if(isDebug) System.out.println(query);
         String response = http.post(endPoint, query);
         if(isDebug) System.out.println(response);
+
+        sequence++;
+        save( endPoint.getHost() + "_" + sequence + "_query", query);
+        save( endPoint.getHost() + "_" + sequence + "_response", response);
+
         return response;
+    }
+
+    private void save(String name, String xml){
+        if(!isSave) return;
+
+        try {
+            File f = new File(name + ".xml");
+            FileWriter fw = new FileWriter(f);
+            fw.write(xml);
+
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setEndpoints() throws IOException {

@@ -31,6 +31,14 @@ public class Main {
         error(e.getMessage());
     }
 
+    private static void usage(){
+        System.out.println("Usage: onvif [OPTION]... [URL]");
+        System.out.println("Get onvif data and convert it to json");
+        System.out.println();
+        System.out.println("  -s, --save     save xml query and response");
+        System.out.println("  -d, --debug    debug output of xml");
+    }
+
     public static void main(String[] args){
         if(args.length == 0){
             error("need onvif url");
@@ -48,7 +56,17 @@ public class Main {
         Cam cam;
 
         try {
-            cam = new Cam(args[0]);
+            cam = new Cam(args[args.length-1]);
+
+            for(String param : args){
+                if(param.equals("--debug") || param.equals("-d")){
+                    cam.setDebug(true);
+                }
+                if(param.equals("--save") || param.equals("-s")){
+                    cam.setSave(true);
+                }
+            }
+
             cam.init();
 
         } catch (ConnectException | MalformedURLException e){
