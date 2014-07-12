@@ -9,6 +9,15 @@ public class Profile {
     private int width;
     private int height;
     private float quality;
+    private String encoding;
+
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
 
     public class URI {
         private String uri;

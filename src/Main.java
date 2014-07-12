@@ -72,6 +72,7 @@ public class Main {
 
             Profile profile = new Profile();
             profile.setName(p.getName());
+            profile.setEncoding(p.getVideoEncoderConfiguration().getEncoding().value());
             profile.setWidth(p.getVideoEncoderConfiguration().getResolution().getWidth());
             profile.setHeight(p.getVideoEncoderConfiguration().getResolution().getHeight());
             profile.setQuality(p.getVideoEncoderConfiguration().getQuality());
