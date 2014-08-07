@@ -1,6 +1,6 @@
-package com.cam;
+package com.onvif.cam;
 
-import com.net.HTTP;
+import com.onvif.net.HTTP;
 import com.onvif.Query;
 import com.onvif.Response;
 import org.onvif.ver10.device.wsdl.GetCapabilities;

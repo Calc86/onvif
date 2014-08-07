@@ -1,4 +1,4 @@
-package com.cam;
+package com.onvif.cam;
 
 /**
  * Created by calc on 11.07.14.

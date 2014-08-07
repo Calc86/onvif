@@ -1,4 +1,4 @@
-package com.net;
+package com.onvif.net;
 
 import java.io.*;
 import java.net.MalformedURLException;
