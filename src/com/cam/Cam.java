@@ -76,16 +76,17 @@ public class Cam {
         String response = http.post(endPoint, query);
         if(isDebug) System.out.println(response);
 
-        sequence++;
-        save( endPoint.getHost() + "_" + sequence + "_query", query);
-        save( endPoint.getHost() + "_" + sequence + "_response", response);
+        if(isSave){
+            String method = o.getClass().toString();
+            sequence++;
+            save( endPoint.getHost() + "_" + sequence + "_" + method + "_query", query);
+            save( endPoint.getHost() + "_" + sequence + "_" + method + "_response", response);
+        }
 
         return response;
     }
 
     private void save(String name, String xml){
-        if(!isSave) return;
-
         try {
             File f = new File(name + ".xml");
             FileWriter fw = new FileWriter(f);
