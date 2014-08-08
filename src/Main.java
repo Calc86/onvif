@@ -1,5 +1,5 @@
-import com.cam.Cam;
-import com.cam.Profile;
+import com.onvif.cam.Cam;
+import com.onvif.cam.Profile;
 import com.google.gson.Gson;
 import com.onvif.JAXBContext;
 import org.onvif.ver10.media.wsdl.GetSnapshotUriResponse;
