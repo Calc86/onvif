@@ -29,8 +29,11 @@ public class HTTP {
 
     public String post(URL url, String data) throws IOException {
         URLConnection connection = url.openConnection();
+        connection.setReadTimeout(3000);
+        connection.setConnectTimeout(3000);
 
         connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "application/soap+xml; charset=utf-8");
 
         OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
 
