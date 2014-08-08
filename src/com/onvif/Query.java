@@ -1,6 +1,9 @@
 package com.onvif;
 
-//import javax.xml.bind.JAXBContext;
+import org.w3._2003._05.soap_envelope.Body;
+import org.w3._2003._05.soap_envelope.Envelope;
+import org.w3._2003._05.soap_envelope.Header;
+
 import javax.xml.bind.*;
 import java.io.StringWriter;
 
@@ -9,30 +12,32 @@ import java.io.StringWriter;
  *
  */
 public class Query {
-    private static final String PLACEHOLDER = "{FRAGMENT}";
+    public String getXML(Object request, Header header){
+        javax.xml.bind.JAXBContext jc = JAXBContext.getInstance();
 
-    public String getXML(Object object){
+        if(jc == null)
+            throw new IllegalStateException("need to launch onvif JAXBContext.create()");
         try {
-            //JAXBContext jc = JAXBContext.newInstance(object.getClass());
-            javax.xml.bind.JAXBContext jc = JAXBContext.getInstance();
-
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 
-            StringWriter fragment = new StringWriter();
+            StringWriter xml = new StringWriter();
             //marshaller.marshal(getCapabilities, System.out);
-            marshaller.marshal(object, fragment);
+            Envelope envelope = new Envelope();
+            if(request != null){
+                Body body = new Body();
+                body.getAny().add(request);
+                envelope.setBody(body);
+            }
 
-            String template = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\">"
-                    + "<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
-                    + PLACEHOLDER
-                    + "</s:Body></s:Envelope>";
+            if(header != null){
+                envelope.setHeader(header);
+            }
 
-            return template.replace(PLACEHOLDER, fragment.toString());
+            marshaller.marshal(envelope, xml);
 
-            //System.out.println(xml);
-            //return xml;
+            return xml.toString();
 
         } catch (JAXBException e) {
             e.printStackTrace();
